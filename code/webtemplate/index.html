@@ -1,0 +1,22 @@
+{% extends "partials/main.html" %}
+{% load static %}
+{% block title %}
+    <title>Ana Sayfa</title>
+{% endblock %}
+{% block content %}
+    <div class="wrapper">
+        <div class="inner">
+            <form action="#">
+                <h3>Welcome</h3>
+                <button formaction="{% url 'login' %}" style="margin-top: 10px;">
+                    <span>Çalışan Girişi</span>
+                </button>
+                <button formaction="{% url 'login_staff' %}"  style="margin-top: 10px;">
+                    <span>Yönetici Girişi</span>
+                </button>
+            </form>
+            <img src="{% static 'images/image-2.png' %}" alt="" class="image-2">
+        </div>
+    </div>
+
+{% endblock %}

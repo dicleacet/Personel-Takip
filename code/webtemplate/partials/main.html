@@ -1,0 +1,68 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    {% block title %}
+    {% endblock %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{% static 'fonts/linearicons/style.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+{% include "partials/messages.html" %}
+{% block content %}
+{% endblock %}
+
+<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
+
+
+<style>
+    .message-box {
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 9999;
+        width: 300px;
+        padding: 20px;
+        margin: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        animation: slideIn 0.5s forwards, slideOut 0.5s forwards 2.5s;
+    }
+
+    .alert-django {
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 9999;
+        width: 300px;
+        padding: 20px;
+        margin: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        animation: slideIn 0.5s forwards, slideOut 0.5s forwards 2.5s;
+    }
+</style>
+
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $('.message-box').remove();
+        }, 3000);
+    });
+
+</script>

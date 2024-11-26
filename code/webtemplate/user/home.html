@@ -1,0 +1,122 @@
+{% extends "partials/main.html" %}
+{% load static %}
+{% block title %}
+    <title>Ana Sayfa</title>
+{% endblock %}
+{% block content %}
+
+    <div class="wrapper">
+        <div class="inner">
+            <img src="{% static 'images/image-1.png' %}" alt="" class="image-1">
+            <form action="#">
+                <h3>Welcome</h3>
+                <button type="button" id="izin-iste-button" style="margin-top: 10px;">
+                    <span>İZİN İSTE</span>
+                </button>
+                <button type="button" style="margin-top: 10px;" id="izin-listele-button">
+                    <span>İZİNLERİM</span>
+                </button>
+                <button formaction="{% url 'logout' %}" style="margin-top: 10px;">
+                    <span>LOGOUT</span>
+                </button>
+            </form>
+            <img src="{% static 'images/image-2.png' %}" alt="" class="image-2">
+        </div>
+    </div>
+
+    <!-- Popup -->
+    <div class="popup-overlay" id="popup">
+        <div class="popup-content">
+            <form method="post">
+                {% csrf_token %}
+                <h3>İzin İste</h3>
+                <div class="form-holder">
+                    <span class="lnr lnr-pencil"></span>
+                    <input type="text" class="form-control" name="off_day_type" placeholder="İzin Türü" required>
+                </div>
+                <div class="form-holder">
+                    <span class="lnr lnr-calendar-full"></span>
+                    <input type="date" class="form-control" name="off_day" placeholder="Başlangıç Tarihi" required>
+                </div>
+                <div class="form-holder">
+                    <span class="lnr lnr-calendar-full"></span>
+                    <input type="date" class="form-control" name="end_off_day" placeholder="Bitiş Tarihi" required>
+                </div>
+                <button type="submit">
+                    <span>İzin İste</span>
+                </button>
+                <button style="margin-top: 10px;" type="button" id="popup-close">
+                    <span>Close</span>
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- Popup -->
+    <div class="popup-overlay" id="popup2">
+        <div class="popup-content">
+            <h2>İzin Durumları</h2>
+            <table class="styled-table">
+                <thead>
+                <tr>
+                    <th>Tarih Aralığı</th>
+                    <th>Türü</th>
+                    <th>Onay Durumu</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for off_request in user_off_request %}
+                    <tr>
+                        <td>{{ off_request.off_day }} - {{ off_request.end_off_day }}</td>
+                        <td>{{ off_request.off_day_type }}</td>
+                        {% if off_request.status == 'Onaylandı' %}
+                            <td class="status-onaylı">{{ off_request.status }}</td>
+                        {% elif off_request.status == 'Reddedildi' %}
+                            <td class="status-reddedildi">{{ off_request.status }}</td>
+                        {% else %}
+                            <td class="status-beklemede">{{ off_request.status }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <button style="margin-top: 10px;" type="button" id="popup-close2">
+                <span>Close</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const popup = document.getElementById('popup');
+        const popup2 = document.getElementById('popup2');
+        const izinIsteButton = document.getElementById('izin-iste-button');
+        const izinListeleButton = document.getElementById('izin-listele-button');
+        const popupCloseButton = document.getElementById('popup-close');
+        const popupCloseButton2 = document.getElementById('popup-close2');
+
+        izinIsteButton.addEventListener('click', function () {
+            popup.style.display = 'block';
+        });
+
+        izinListeleButton.addEventListener('click', function () {
+            popup2.style.display = 'block';
+        });
+
+        popupCloseButton.addEventListener('click', function () {
+            popup.style.display = 'none';
+        });
+
+        popupCloseButton2.addEventListener('click', function () {
+            popup2.style.display = 'none';
+        });
+
+        // Sayfa dışına tıklayınca popup'ı kapat
+        window.addEventListener('click', function (event) {
+            if (event.target === popup) {
+                popup.style.display = 'none';
+            }
+            if (event.target === popup2) {
+                popup2.style.display = 'none';
+            }
+        });
+    </script>
+{% endblock %}

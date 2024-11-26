@@ -1,0 +1,20 @@
+FROM python:3.9.2
+
+RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common locales build-essential \
+gnupg2
+
+RUN apt-get update && apt-get install -y --no-install-recommends dnsutils libssl-dev gettext procps net-tools nano \
+telnet gdal-bin
+
+RUN cd /tmp/ && wget https://www.python.org/ftp/python/3.9.2/Python-3.9.2.tgz && tar xzf Python-3.9.2.tgz && \
+cd Python-3.9.2 && ./configure --prefix=/usr --enable-optimizations && make altinstall
+
+RUN locale-gen "en_US.UTF-8"
+
+RUN /usr/bin/python3.9 -m venv /venv
+RUN /venv/bin/python3.9 -m pip install --upgrade pip
+
+COPY code/requirements.txt /root/requirements.txt
+RUN /venv/bin/pip install -r /root/requirements.txt
+EXPOSE 8008
+CMD ["/bin/bash", "/code/runserver.sh"]

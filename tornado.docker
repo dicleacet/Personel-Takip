@@ -1,0 +1,14 @@
+FROM python:3.9
+
+RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common locales build-essential \
+gnupg2
+
+RUN apt-get install -y --no-install-recommends procps net-tools telnet
+
+COPY ./code/services/tornado /tornadocode
+
+
+RUN pip3 install --upgrade pip
+RUN pip3 install -r /tornadocode/requirements.txt
+EXPOSE 1337
+CMD ["python3", "-u", "/tornadocode/server.py"]

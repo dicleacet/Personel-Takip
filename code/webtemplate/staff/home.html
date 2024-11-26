@@ -1,0 +1,237 @@
+{% extends "partials/main.html" %}
+{% load static %}
+{% block title %}
+    <title>Yönetici Ana Sayfa</title>
+{% endblock %}
+
+
+{% block content %}
+
+
+    <div class="top-bar">
+        <div class="topbar-container">
+            <span>Yönetici Paneli</span>
+            <button style="background-color: #007bff" id="off-request">Kullanıcı İzinleri</button>
+            <button style="background-color: #007bff" id="gec-kalanlar-button">Geç Kalanlar</button>
+        </div>
+        <div class="container" style="display: flex; gap: 10px">
+            <div class="notification-bell" id="bildirimler" style="cursor: pointer" >
+                <div class="notification-bell__icon">
+                    <i class="material-icons">notifications</i>
+                </div>
+                <div class="notification-bell__badge">
+                    <div class="notification-bell__counter" id="notificaon-id"></div>
+                </div>
+            </div>
+            <a type="button" class="btn-onayla" href="{% url 'logout_staff' %}">
+            Logout
+        </a>
+        </div>
+
+    </div>
+
+    <div class="bg-secondary">
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th>Çalışan</th>
+                <th>Kalan İzin</th>
+                <th>Çalışıyor Durumu</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>
+                        {{ user.user.first_name }} {{ user.user.last_name }}
+                        <br>
+                        <small>{{ user.user.email }}</small>
+                    </td>
+                    <td>{{ user.user.info.annual_leave }}</td>
+                    {% if user.work_status %}
+                        <td class="status-onaylı">Çalışıyor</td>
+                    {% else %}
+                        <td class="status-reddedildi">Çalışmıyor</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="popup-overlay" id="popup5">
+        <div class="popup-content">
+            <h2>Bildirimler</h2>
+            <table class="styled-table">
+                <thead>
+                <tr>
+                    <th>Çalışan</th>
+                    <th>Bildirim Türü</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in Notifications %}
+                    <tr>
+                        <td>
+                            {{ item.user.first_name }} {{ item.user.last_name }}
+                            <br>
+                            <small>{{ item.user.email }}</small>
+                        </td>
+                        {% if item.type_key == "late" %}
+                            <td>Çalışan geç kaldı!</td>
+                        {% else %}
+                            <td>Çalışan yıllık izni 3 günden az kaldı!</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <button style="margin-top: 10px;" type="button" id="popup-close5">
+                <span>Close</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="popup2">
+        <div class="popup-content">
+            <h2>Geç Kalanlar</h2>
+            <table class="styled-table">
+                <thead>
+                <tr>
+                    <th>Çalışan</th>
+                    <th>Geç Kaldığı Süre</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for late_user in lates_user %}
+                    <tr>
+                        <td>
+                            {{ late_user.user.first_name }} {{ late_user.user.last_name }}
+                            <br>
+                            <small>{{ late_user.user.email }}</small>
+                        </td>
+                        <td>{{ late_user.late_minute }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <button style="margin-top: 10px;" type="button" id="popup-close2">
+                <span>Close</span>
+            </button>
+        </div>
+    </div>
+
+
+    <div class="popup-overlay" id="popup3">
+        <div class="popup-content">
+            <h2>Kullanıcı İzinleri</h2>
+            <table class="styled-table">
+                <thead>
+                <tr>
+                    <th>Çalışan</th>
+                    <th>Tarih Aralığı</th>
+                    <th>Kalan Yıllık İzin</th>
+                    <th>İşlem</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for req in off_requests %}
+                    <tr>
+                        <td>
+                            {{ req.user.first_name }} {{ req.user.last_name }}
+                            <br>
+                            <small>{{ req.user.email }}</small>
+                        </td>
+                        <td>{{ req.off_day }} - {{ req.end_off_day }}</td>
+                        <td>{{ req.user.info.annual_leave }}</td>
+                        <td>
+                            <a href="{% url 'accept_off_request' req.id %}" class="btn-onayla">Onayla</a>
+                            <a href="{% url 'reject_off_request' req.id %}" class="btn-reddet">Reddet</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <button style="margin-top: 10px;" type="button" id="popup-close3">
+                <span>Close</span>
+            </button>
+        </div>
+    </div>
+
+    <style>
+        @import url(//fonts.googleapis.com/icon?family=Material+Icons);
+
+        .material-icons {
+            font-size: 30px;
+        }
+
+        .notification-bell, .notification-bell__icon {
+            position: relative;
+            z-index: 0;
+        }
+
+        .notification-bell__badge {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            transform: translate(-3px, 3px);
+            right: 0;
+            top: 0;
+            background-color: red;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .notification-bell__badge .notification-bell__counter {
+            color: #fff;
+            font-size: 8px;
+        }
+    </style>
+
+    <script>
+        document.getElementById('gec-kalanlar-button').addEventListener('click', function () {
+            document.getElementById('popup2').style.display = 'block';
+        });
+
+        document.getElementById('popup-close2').addEventListener('click', function () {
+            document.getElementById('popup2').style.display = 'none';
+        });
+
+        document.getElementById('off-request').addEventListener('click', function () {
+            document.getElementById('popup3').style.display = 'block';
+        });
+
+        document.getElementById('popup-close3').addEventListener('click', function () {
+            document.getElementById('popup3').style.display = 'none';
+        });
+
+        document.getElementById('bildirimler').addEventListener('click', function () {
+            document.getElementById('popup5').style.display = 'block';
+        });
+
+        document.getElementById('popup-close5').addEventListener('click', function () {
+            document.getElementById('popup5').style.display = 'none';
+            var notification_ids = [];
+            {% for item in Notifications %}
+                notification_ids.push({{ item.id }});
+            {% endfor %}
+            console.log(notification_ids);
+            $.ajax({
+                method: 'POST',
+                url: "{% url 'read_notification' %}",
+                data: {
+                    'notification_ids': JSON.stringify(notification_ids),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    location.reload();
+                }
+            });
+        });
+
+    </script>
+    <script type="text/javascript">let sKey = "{{ request.session.session_key }}";</script>
+    <script src="{% static 'js/websocket.js' %}"></script>
+{% endblock %}

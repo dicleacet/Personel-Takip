@@ -1,0 +1,53 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:10.16
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=ptapp
+      - POSTGRES_USER=dicle
+      - POSTGRES_PASSWORD=dicle123
+  tornado:
+    container_name: tornado
+    build:
+      context: ./
+      dockerfile: tornado.docker
+    volumes:
+      - ./code/services/tornado:/tornadocode
+    ports:
+      - "1337:1337"
+  redis:
+    container_name: redis
+    build:
+      context: ./
+      dockerfile: redis.docker
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redisdata:/data
+  ptapp:
+    container_name: pt
+    build:
+      context: ./
+      dockerfile: dockerfile_dev
+    volumes:
+      - ./code:/code
+      - ./harddisk:/harddisk
+    ports:
+      - "127.0.0.1:8008:8008"
+    environment:
+      - POSTGRES_USER=dicle
+      - POSTGRES_PASSWORD=dicle123
+      - DOCKER_HOST=pt
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+      - tornado
+volumes:
+  pg_data:
+  redisdata:
